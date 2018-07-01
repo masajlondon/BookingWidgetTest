@@ -4859,12 +4859,14 @@ return /******/ (function(modules) { // webpackBootstrap
 			voip: {
 				type: 'string',
 				title: 'Booking Voucher',
+				placeholder: 'Booking Voucher',
 				format: 'phone',
 				required: false
 			},
 			comment: {
 				type: 'string',
 				title: 'How Did You Find Us',
+				placeholder: 'How Did You Find Us',
 				required: false
 			}
 	  }
