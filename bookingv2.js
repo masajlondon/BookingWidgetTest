@@ -4870,7 +4870,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				title: 'How Did You Find Us',
 				placeholder: 'How Did You Find Us',
 				required: false,
-				locked: false§
+				locked: false
 			}
 	  }
 	}
