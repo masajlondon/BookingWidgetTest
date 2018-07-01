@@ -620,7 +620,7 @@ var clickTimeslot = function(eventData) {
 	    });
 
 	    form.submit(function(e) {
-				e.preventDefault();		    		
+				e.preventDefault();
 				$(ot).addClass('loading');
 				//https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-qSs3_Q47_eQfU4WAFs0g3wwGbhhLo245KKWvC0kbGbgpifnEe0n6xdqMbl_DkFWnDlOTPtFnrpCs/pub?output=tsv
 				var formElement = $(form);
@@ -884,7 +884,7 @@ var clickTimeslot = function(eventData) {
 		  	var url = window.location.href;
 		  	googleData.bookingtype = url.substring(url.lastIndexOf("/") + 1, url.length);
 			googleData.voucher = formData.voip;
-			
+
 			var googlerequest;
 			googlerequest = $.ajax({
 					url: "https://script.google.com/macros/s/AKfycbyW_d_Ysbo1u3ZI0a-pL_BU7H1dvHZzEz_gwh_ZwMx3skXM1I8/exec",
@@ -29455,7 +29455,7 @@ var clickTimeslot = function(eventData) {
 	    },
 	    phone: {
 	      enabled: true,
-	      placeholder: 'Date Of Birth (e.g. 12/02/1989)',
+	      placeholder: 'Phone Number',
 	      prefilled: false,
 	      required: true,
 	      locked: false
