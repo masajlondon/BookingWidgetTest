@@ -5531,7 +5531,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var voucherRequest = new Object();
 				voucherRequest.voucher = formData.voip;
 				voucherRequest.id = config.widgetId;
-				console.log(config.widgetId);
+				console.log(config.project_id);
 				console.log(config);
 
 				googlerequest = $.ajax({
