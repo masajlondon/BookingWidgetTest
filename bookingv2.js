@@ -4870,7 +4870,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				title: 'How Did You Find Us',
 				placeholder: 'How Did You Find Us',
 				required: false,
-				locked: false
+				locked: false§
 			}
 	  }
 	}
@@ -5515,13 +5515,84 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    form.submit(function(e) {
-	      submitBookingForm(this, e, eventData);
-	    });
+				e.preventDefault();
+				$(ot).addClass('loading');
+				//https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-qSs3_Q47_eQfU4WAFs0g3wwGbhhLo245KKWvC0kbGbgpifnEe0n6xdqMbl_DkFWnDlOTPtFnrpCs/pub?output=tsv
+				var formElement = $(form);
+				var formData = {};
+				$.each(formElement.serializeArray(), function(i, field) {
+					formData[field.name] = field.value;
+				});
+				var ot = this;
+				var goodBookingVoucher = 0;
 
-	    // Show powered by Timekit message
-	    if (getConfig().ui.show_credits) {
-	      renderPoweredByMessage(bookingPageTarget);
-	    }
+				var googlerequest;
+				var voucherRequest = new Object();
+				voucherRequest.voucher = formData.voip;
+				voucherRequest.id = config.widgetId;
+
+				googlerequest = $.ajax({
+						url: "https://script.google.com/macros/s/AKfycbzLdDOTcgtPa9GDapoxjEKeE3iQ3q6h4ko00VPrGEK8-a-plzQe/exec",
+						type: "post",
+						data: voucherRequest,
+						success: function(data) {
+									if (data !== "False"){
+																			console.log(data);
+										stripePrice = data;
+									}
+									handlepayment(ot, formData, formElement, e, eventData, stripePrice);
+						}
+					});
+	    });
+			var handlepayment = function(ot, formData, formElement, e, eventData, bookingVoucherPrice){
+	        console.log(bookingVoucherPrice);
+					if (parseInt(bookingVoucherPrice) <= 1){
+						submitBookingForm(formData, ot, e, eventData);
+						$(ot).removeClass('loading').addClass('success');
+
+					} else {
+						var handler = StripeCheckout.configure({
+							key: 'pk_live_xrC5u3yE7x3y5q9YZbqPpQ8E',
+							image: 'https://rawgit.com/masajlondon/number1-60mins/master/dist/paymenticon.png',
+							locale: 'auto',
+							token: function(token) {
+									$('.pay').prop("disabled", true);
+									$('.pay').text('Paying...')
+									$.ajax({
+										url: 'https://wt-258f33603576bc2c25409bcf95e582f4-0.sandbox.auth0-extend.com/webtask-stripe-order',
+										type: 'POST',
+										data: {
+											stripeToken: token.id,
+											stripePrice: bookingVoucherPrice*100
+										}
+									}).then(function(stripeCustomer) {
+										submitBookingForm(formData, ot, e, eventData, bookingVoucherPrice);
+									}).fail(function(e) {
+										$('.pay').text('Buy');
+										alert('There was an error processing the payment. Please try again.')
+									});
+									}
+							});
+
+							e.preventDefault()
+							handler.open({
+								name: 'Masaj',
+								description: '',
+								currency: 'gbp',
+								amount: bookingVoucherPrice*100
+							});
+
+							// Close Checkout on page navigation:
+							window.addEventListener('popstate', function() {
+								handler.close();
+							});
+				}
+			};
+
+	    // // Show powered by Timekit message
+	    // if (getConfig().ui.show_credits) {
+	    //   renderPoweredByMessage(bookingPageTarget);
+	    // }
 
 	    $(document).on('keyup', function(e) {
 	      // escape key maps to keycode `27`
@@ -5556,7 +5627,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    e.preventDefault();
 
-	    var formElement = $(form);
+			var formElement = $(form);
+			var originalform = $(form);
 
 	    if(formElement.hasClass('success')) {
 	      getAvailability();
@@ -5673,6 +5745,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	    .include(getConfig().create_booking_response_include)
 	    .headers(requestHeaders)
 	    .createBooking(args);
+
+			var googleData = new Object();
+			googleData.name = formData.name;
+			googleData.email = formData.email;
+			googleData.starttime = eventData.start.format().replace("T", " ").replace("+01:00", "");
+			googleData.endtime = eventData.end.format().replace("T", " ").replace("+01:00", "");
+			googleData.dateofbirth = formData.phone;
+		  	googleData.comment = formData.comment;
+		  	if (!bookingVoucherPrice){
+				bookingVoucherPrice = 0;
+			}
+		  	googleData.price = bookingVoucherPrice;
+		  	var url = window.location.href;
+		  	googleData.bookingtype = url.substring(url.lastIndexOf("/") + 1, url.length);
+			googleData.voucher = formData.voip;
+
+			var googlerequest;
+			googlerequest = $.ajax({
+					url: "https://script.google.com/macros/s/AKfycbyW_d_Ysbo1u3ZI0a-pL_BU7H1dvHZzEz_gwh_ZwMx3skXM1I8/exec",
+					type: "post",
+					data: googleData,
+					success: function(data) {
+							console.log(data);
+				}});
+
+						// Callback handler that will be called on success
+				// googlerequest.done(function (response, textStatus, jqXHR){
+				// 		// Log a message to the console
+				// 		console.log("Hooray, it worked!");
+				// });
+
+				// Callback handler that will be called on failure
+				googlerequest.fail(function (jqXHR, textStatus, errorThrown){
+						// Log the error to the console
+						console.error(
+								"The following error occurred: "+
+								textStatus, errorThrown
+						);
+				});
 
 	    request
 	    .then(function(response){
