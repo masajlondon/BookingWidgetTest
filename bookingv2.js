@@ -4854,20 +4854,23 @@ return /******/ (function(modules) { // webpackBootstrap
 				type: 'string',
 				title: 'Phone Number',
 				format: 'phone',
-				required: true
+				required: true,
+				locked: false
 			},
 			voip: {
 				type: 'string',
 				title: 'Booking Voucher',
 				placeholder: 'Booking Voucher',
 				format: 'phone',
-				required: false
+				required: false,
+				locked: false
 			},
 			comment: {
 				type: 'string',
 				title: 'How Did You Find Us',
 				placeholder: 'How Did You Find Us',
-				required: false
+				required: false,
+				locked: false
 			}
 	  }
 	}
