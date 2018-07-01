@@ -4851,25 +4851,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	      required: true
 	    },
 			comment: {
-				enabled: true,
-				placeholder: 'How Did You Find Us?',
-				prefilled: false,
-				required: false,
-				locked: false
+				title: 'How Did You Find Us?',
+				type: 'string',
+	      required: true
 			},
 			 phone: {
-		     enabled: true,
-		     placeholder: 'Phone Number',
+		     title: 'Phone Number',
 		     prefilled: false,
-		     required: true,
-		     locked: false
+				 type: 'string',
+ 	       required: true
 			 },
 				voip: {
-		      enabled: true,
-		      placeholder: 'Booking Voucher',
-		      prefilled: false,
+		      title: 'Booking Voucher',
+					type: 'string',
 		      required: false,
-		      locked: false
 		    }
 	  }
 	}
