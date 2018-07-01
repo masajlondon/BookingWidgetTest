@@ -5535,10 +5535,11 @@ return /******/ (function(modules) { // webpackBootstrap
 				googlerequest = $.ajax({
 						url: "https://script.google.com/macros/s/AKfycbzLdDOTcgtPa9GDapoxjEKeE3iQ3q6h4ko00VPrGEK8-a-plzQe/exec",
 						type: "post",
+						dataType: 'jsonp',
 						data: voucherRequest,
 						success: function(data) {
 									if (data !== "False"){
-																			console.log(data);
+										console.log(data);
 										stripePrice = data;
 									}
 									handlepayment(ot, formData, formElement, e, eventData, stripePrice);
