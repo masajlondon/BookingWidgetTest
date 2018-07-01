@@ -4838,45 +4838,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	  booking: {
 	    graph: 'instant'
 	  },
-		bookingFields: {
-		 name: {
-			 placeholder: 'Full name',
-			 prefilled: false,
-			 locked: false
-		 },
-		 email: {
-			 placeholder: 'E-mail',
-			 prefilled: false,
-			 locked: false
-		 },
-		 comment: {
-			 enabled: true,
-			 placeholder: 'How Did You Find Us?',
-			 prefilled: false,
-			 required: false,
-			 locked: false
-		 },
-		 phone: {
-			 enabled: true,
-			 placeholder: 'Phone Number',
-			 prefilled: false,
-			 required: true,
-			 locked: false
-		 },
-		 voip: {
-			 enabled: true,
-			 placeholder: 'Booking Voucher',
-			 prefilled: false,
-			 required: false,
-			 locked: false
-		 },
-		 location: {
-			 enabled: false,
-			 placeholder: 'Location',
-			 prefilled: false,
-			 required: false,
-			 locked: false
-		 }
+		customer_fields: {
+	    name: {
+	      type: 'string',
+	      title: 'Name',
+	      required: true
+	    },
+	    email: {
+	      type: 'string',
+	      title: 'E-mail',
+	      format: 'email',
+	      required: true
+	    },
+			phone: {
+				type: 'string',
+				title: 'Phone Number',
+				format: 'phone',
+				required: true
+			},
+			voip: {
+				type: 'string',
+				title: 'Booking Voucher',
+				format: 'phone',
+				required: false
+			},
+			comment: {
+				type: 'string',
+				title: 'How Did You Find Us',
+				required: false
+			}
 	  }
 	}
 
