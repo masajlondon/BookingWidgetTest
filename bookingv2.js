@@ -5528,6 +5528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var goodBookingVoucher = 0;
 
 				var googlerequest;
+				var stripePrice;
 				var voucherRequest = new Object();
 				voucherRequest.voucher = formData.voip;
 				voucherRequest.id = config.project_id;
