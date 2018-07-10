@@ -5642,7 +5642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    // Abort if form is submitting, have submitted or does not validate
-	    if(formElement.hasClass('loading') || formElement.hasClass('error') || !e.target.checkValidity()) {
+	    if(formElement.hasClass('loading') || formElement.hasClass('error')) {
 	      var submitButton = formElement.find('.bookingjs-form-button');
 	      submitButton.addClass('button-shake');
 	      setTimeout(function() {
