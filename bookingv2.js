@@ -5630,7 +5630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Event handler on form submit
 	  var submitBookingForm = function(form, e, eventData) {
 
-	    e.preventDefault();
+	    //e.preventDefault();
 
 			var formElement = $(form);
 			var originalform = $(form);
