@@ -5558,7 +5558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					} else {
 						var handler = StripeCheckout.configure({
 							key: 'pk_live_xrC5u3yE7x3y5q9YZbqPpQ8E',
-							image: 'https://rawgit.com/masajlondon/number1-60mins/master/dist/paymenticon.png',
+							image: 'https://cdn.rawgit.com/masajlondon/BookingWidget/3112bb7d1cf01711325f6bf7892096cc189a857f/dist/paymenticon.png',
 							locale: 'auto',
 							token: function(token) {
 									$('.pay').prop("disabled", true);
