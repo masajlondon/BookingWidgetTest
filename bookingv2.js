@@ -5537,7 +5537,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				googlerequest = $.ajax({
 						url: "https://script.google.com/macros/s/AKfycbx-Br5vGyyy4yeBJr-ohGxVjKTSvJTL-ZqqJO28RISR70UfXDY/exec",
 						type: "post",
-						dataType: 'jsonp',
+						dataType: 'json',
 						data: voucherRequest,
 						success: function(data) {
 									if (data !== "False"){
