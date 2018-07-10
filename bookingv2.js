@@ -5629,7 +5629,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // Event handler on form submit
 	  var submitBookingForm = function(form, e, eventData) {
-
+			console.log(e);§
 	    //e.preventDefault();
 
 			var formElement = $(form);
@@ -5691,7 +5691,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // Create new booking
 	  var timekitCreateBooking = function(formData, eventData) {
-
+			console.log(eventData);
 	    var args = {
 	      start: eventData.start.format(),
 	      end: eventData.end.format(),
