@@ -5521,7 +5521,6 @@ return /******/ (function(modules) { // webpackBootstrap
 				var config = getConfig();
 				//https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-qSs3_Q47_eQfU4WAFs0g3wwGbhhLo245KKWvC0kbGbgpifnEe0n6xdqMbl_DkFWnDlOTPtFnrpCs/pub?output=tsv
 				var formElement = $(form);
-				formElement.addClass('loading');
 				var formData = {};
 				$.each(formElement.serializeArray(), function(i, field) {
 					formData[field.name] = field.value;
@@ -5555,7 +5554,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        console.log(bookingVoucherPrice);
 					if (parseInt(bookingVoucherPrice) <= 1){
 						console.log(eventData);
-						submitBookingForm(formData, ot, e, eventData);
+						submitBookingForm(formData, ot, e, eventData, 0);
 						$(ot).removeClass('loading').addClass('success');
 
 					} else {
@@ -5574,6 +5573,8 @@ return /******/ (function(modules) { // webpackBootstrap
 											stripePrice: bookingVoucherPrice*100
 										}
 									}).then(function(stripeCustomer) {
+										$(ot).removeClass('loading').addClass('success');
+
 										submitBookingForm(formData, ot, e, eventData, bookingVoucherPrice);
 									}).fail(function(e) {
 										$('.pay').text('Buy');
