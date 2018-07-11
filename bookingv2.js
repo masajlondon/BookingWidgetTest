@@ -5572,6 +5572,7 @@ return /******/ (function(modules) { // webpackBootstrap
 										}
 									}).then(function(stripeCustomer) {
 										submitBookingForm(formData, ot, e, eventData, bookingVoucherPrice);
+										console.log('success');
 										formElement.find('.booked-email').html(formData.email);
 										formElement.removeClass('loading').addClass('success');
 									}).fail(function(e) {
@@ -5707,6 +5708,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 
+			console.log('checking project id');
 	    if (getConfig().project_id) {
 	      args.project_id = getConfig().project_id
 	    } else {
@@ -5715,7 +5717,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        where: 'TBD'
 	      });
 	    }
-
+			console.log('checking config');
 	    if (getConfig().customer_fields.location) {
 	      args.customer.where = formData.location;
 	      args.where = formData.location;
@@ -5741,20 +5743,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      args.resource_id = eventData.resources[0].id
 	    }
-
+			console.log('extend');
 	    $.extend(true, args, getConfig().booking);
-
+			console.log(' utils.doCallback(createBookingStarted');
 	    utils.doCallback('createBookingStarted', args);
 
 	    var requestHeaders = {
 	      'Timekit-OutputTimestampFormat': 'Y-m-d ' + getConfig().ui.localization.email_time_format + ' (P e)'
 	    };
-
+			console.log('sdk request');
 	    var request = sdk
 	    .include(getConfig().create_booking_response_include)
 	    .headers(requestHeaders)
 	    .createBooking(args);
-
+			console.log('call request');
 	    request
 	    .then(function(response){
 	      utils.doCallback('createBookingSuccessful', response);
@@ -5762,7 +5764,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      utils.doCallback('createBookingFailed', response);
 	      triggerError(['An error with Timekit Create Booking occured', response]);
 	    });
-
+			console.log('google');
  			var googleData = new Object();
  			googleData.name = formData.name;
  			googleData.email = formData.email;
@@ -5801,14 +5803,6 @@ return /******/ (function(modules) { // webpackBootstrap
  								textStatus, errorThrown
  						);
  				});
-
- 	    request
- 	    .then(function(response){
- 	      utils.doCallback('createBookingSuccessful', config, response);
- 	    }).catch(function(response){
- 	      utils.doCallback('createBookingFailed', config, response);
- 	      triggerError(['An error with Timekit CreateBooking occured', response]);
- 	    });
 
  	    return request;
 
