@@ -5547,9 +5547,9 @@ return /******/ (function(modules) { // webpackBootstrap
 									handlepayment(ot, formData, formElement, e, eventData, stripePrice);
 						}
 					});
+				}
 	    });
 			var handlepayment = function(ot, formData, formElement, e, eventData, bookingVoucherPrice){
-	        console.log(bookingVoucherPrice);
 					if (parseInt(bookingVoucherPrice) <= 1){
 						formElement.removeClass('loading');
 						submitBookingForm(formData, ot, e, eventData, 0);
@@ -5574,8 +5574,6 @@ return /******/ (function(modules) { // webpackBootstrap
 									}).then(function(stripeCustomer) {
 										formElement.addClass('loading');
 										submitBookingForm(formData, ot, e, eventData, bookingVoucherPrice);
-										console.log('success');
-
 										formElement.find('.booked-email').html(formData.email);
 										formElement.removeClass('loading').addClass('success');
 									}).fail(function(e) {
@@ -5597,7 +5595,7 @@ return /******/ (function(modules) { // webpackBootstrap
 							window.addEventListener('popstate', function() {
 								handler.close();
 							});
-				}
+						}
 			};
 
 	    // // Show powered by Timekit message
@@ -5635,18 +5633,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		// Event handler on form submit
 	  var submitBookingForm = function(formData, form, e, eventData, bookingVoucherPrice) {
-			console.log('submit booking form called');
 	    e.preventDefault();
 	    var formElement = $(form);
 			var originalform = $(form);
-			console.log('check for success ');
 
 			if(formElement.hasClass('success')) {
 					getAvailability();
 					hideBookingPage();
 					return;
 				}
-				console.log('abort if submitting');
 
 	    // Abort if form is submitting, have submitted or does not validate
 	    if(formElement.hasClass('error') || !e.target.checkValidity()) {
@@ -5662,13 +5657,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // $.each(formElement.serializeArray(), function(i, field) {
 	    //   formData[field.name] = field.value;
 	    // });
-			console.log('adding loading');
 
 	    formElement.addClass('loading');
 
 	    utils.doCallback('submitBookingForm', getConfig(), formData);
-
-			console.log('creating booking');
 
 	    // Call create event endpoint
 	    timekitCreateBooking(formData, eventData, bookingVoucherPrice).then(function(response){
@@ -5705,7 +5697,6 @@ return /******/ (function(modules) { // webpackBootstrap
 		// Create new booking
  	  var timekitCreateBooking = function(formData, eventData, bookingVoucherPrice) {
 			var config = getConfig();
-			console.log(config);
 			var args = {
 	      start: eventData.start.format(),
 	      end: eventData.end.format(),
@@ -5717,7 +5708,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 
-			console.log('checking project id');
 	    if (getConfig().project_id) {
 	      args.project_id = getConfig().project_id
 	    } else {
@@ -5726,7 +5716,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        where: 'TBD'
 	      });
 	    }
-			console.log('checking config');
 	    if (getConfig().customer_fields.location) {
 	      args.customer.where = formData.location;
 	      args.where = formData.location;
@@ -5752,20 +5741,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      args.resource_id = eventData.resources[0].id
 	    }
-			console.log('extend');
 	    $.extend(true, args, getConfig().booking);
-			console.log(' utils.doCallback(createBookingStarted');
 	    utils.doCallback('createBookingStarted', args);
 
 	    var requestHeaders = {
 	      'Timekit-OutputTimestampFormat': 'Y-m-d ' + getConfig().ui.localization.email_time_format + ' (P e)'
 	    };
-			console.log('sdk request');
 	    var request = sdk
 	    .include(getConfig().create_booking_response_include)
 	    .headers(requestHeaders)
 	    .createBooking(args);
-			console.log('call request');
+
 	    request
 	    .then(function(response){
 	      utils.doCallback('createBookingSuccessful', response);
@@ -5773,7 +5759,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      utils.doCallback('createBookingFailed', response);
 	      triggerError(['An error with Timekit Create Booking occured', response]);
 	    });
-			console.log('google');
  			var googleData = new Object();
  			googleData.name = formData.name;
  			googleData.email = formData.email;
