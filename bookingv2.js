@@ -5550,10 +5550,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			var handlepayment = function(ot, formData, formElement, e, eventData, bookingVoucherPrice){
 	        console.log(bookingVoucherPrice);
 					if (parseInt(bookingVoucherPrice) <= 1){
-						console.log(eventData);
+						formElement.removeClass('loading');
 						submitBookingForm(formData, ot, e, eventData, 0);
 						formElement.find('.booked-email').html(formData.email);
-						$(ot).removeClass('loading').addClass('success');
+						formElement.removeClass('loading').addClass('success');
 
 					} else {
 						var handler = StripeCheckout.configure({
@@ -5571,8 +5571,10 @@ return /******/ (function(modules) { // webpackBootstrap
 											stripePrice: bookingVoucherPrice*100
 										}
 									}).then(function(stripeCustomer) {
+										formElement.addClass('loading');
 										submitBookingForm(formData, ot, e, eventData, bookingVoucherPrice);
 										console.log('success');
+
 										formElement.find('.booked-email').html(formData.email);
 										formElement.removeClass('loading').addClass('success');
 									}).fail(function(e) {
@@ -5646,7 +5648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				console.log('abort if submitting');
 
 	    // Abort if form is submitting, have submitted or does not validate
-	    if(formElement.hasClass('loading') || formElement.hasClass('error') || !e.target.checkValidity()) {
+	    if(formElement.hasClass('error') || !e.target.checkValidity()) {
 	      var submitButton = formElement.find('.bookingjs-form-button');
 	      submitButton.addClass('button-shake');
 	      setTimeout(function() {
