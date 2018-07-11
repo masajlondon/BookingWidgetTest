@@ -5514,6 +5514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    form.submit(function(e) {
+				if (!formElement.hasClass('success')){
 				e.preventDefault();
 				$(ot).addClass('loading');
 				var config = getConfig();
@@ -5614,7 +5615,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    setTimeout(function(){
 	      bookingPageTarget.addClass('show');
 	    }, 100);
-
+		}
 	  };
 
 	  // Remove the booking page DOM node
