@@ -5695,6 +5695,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		// Create new booking
  	  var timekitCreateBooking = function(formData, eventData, bookingVoucherPrice) {
 			var config = getConfig();
+			console.log(config);
  	    var args = {
  	      event: {
  	        start: eventData.start.format(),
