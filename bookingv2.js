@@ -5629,22 +5629,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  };
 
-	  // Event handler on form submit
-	  var submitBookingForm = function(form, e, eventData) {
-			console.log(e);
-	    //e.preventDefault();
-
-			var formElement = $(form);
+		// Event handler on form submit
+	  var submitBookingForm = function(formData, form, e, eventData, bookingVoucherPrice) {
+	    e.preventDefault();
+	    var formElement = $(form);
 			var originalform = $(form);
 
-	    if(formElement.hasClass('success')) {
-	      getAvailability();
-	      hideBookingPage();
-	      return;
-	    }
+			if(formElement.hasClass('success')) {
+					getAvailability();
+					hideBookingPage();
+					return;
+				}
 
 	    // Abort if form is submitting, have submitted or does not validate
-	    if(formElement.hasClass('loading') || formElement.hasClass('error')) {
+	    if(formElement.hasClass('loading') || formElement.hasClass('error') || !e.target.checkValidity()) {
 	      var submitButton = formElement.find('.bookingjs-form-button');
 	      submitButton.addClass('button-shake');
 	      setTimeout(function() {
@@ -5653,20 +5651,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return;
 	    }
 
-	    var formData = {};
-	    $.each(formElement.serializeArray(), function(i, field) {
-	      formData[field.name] = field.value;
-	    });
+	    // var formData = {};
+	    // $.each(formElement.serializeArray(), function(i, field) {
+	    //   formData[field.name] = field.value;
+	    // });
 
 	    formElement.addClass('loading');
 
-	    utils.doCallback('submitBookingForm', formData);
+	    utils.doCallback('submitBookingForm', config, formData);
 
 	    // Call create event endpoint
-	    timekitCreateBooking(formData, eventData).then(function(response){
+	    timekitCreateBooking(formData, eventData, bookingVoucherPrice).then(function(response){
 
 	      formElement.find('.booked-email').html(formData.email);
-	      formElement.removeClass('loading').addClass('success');
+	      originalform.removeClass('loading').addClass('success');
+
+				// getAvailability();
+				// hideBookingPage();
 
 	    }).catch(function(response){
 
