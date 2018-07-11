@@ -5696,81 +5696,73 @@ return /******/ (function(modules) { // webpackBootstrap
  	  var timekitCreateBooking = function(formData, eventData, bookingVoucherPrice) {
 			var config = getConfig();
 			console.log(config);
- 	    var args = {
- 	      event: {
- 	        start: eventData.start.format(),
- 	        end: eventData.end.format(),
- 	        what: config.name + ' x ' + formData.name,
- 	        where: 'TBD',
- 	        description: '',
- 	        participants: [formData.email]
- 	      },
- 	      customer: {
- 	        name: formData.name,
- 	        email: formData.email,
- 	        timezone: moment.tz.guess()
- 	      }
- 	    };
+			var args = {
+	      start: eventData.start.format(),
+	      end: eventData.end.format(),
+	      description: '',
+	      customer: {
+	        name: formData.name,
+	        email: formData.email,
+	        timezone: moment.tz.guess()
+	      }
+	    };
 
- 	    if (config.calendar) {
- 	      args.event.calendar_id = config.calendar;
- 	    }
+	    if (getConfig().project_id) {
+	      args.project_id = getConfig().project_id
+	    } else {
+	      $.extend(true, args, {
+	        what: 'Meeting with ' + formData.name,
+	        where: 'TBD'
+	      });
+	    }
 
- 	    if (config.bookingFields.location.enabled) {
- 	      args.customer.where = formData.location;
- 	      args.event.where = formData.location;
- 	    }
- 	    if (config.bookingFields.comment.enabled) {
- 	      args.customer.comment = formData.comment;
- 	      args.event.description += config.bookingFields.comment.placeholder + ': ' + formData.comment + '\n';
- 	    }
- 	    if (config.bookingFields.phone.enabled) {
- 	      args.customer.phone = formData.phone;
- 	      args.event.description += config.bookingFields.phone.placeholder + ': ' + formData.phone + '\n';
- 	    }
- 	    if (config.bookingFields.voip.enabled) {
- 	      args.customer.voip = formData.voip;
- 	      args.event.description += config.bookingFields.voip.placeholder + ': ' + formData.voip + '\n';
- 	    }
+	    if (getConfig().customer_fields.location) {
+	      args.customer.where = formData.location;
+	      args.where = formData.location;
+	    }
+	    if (getConfig().customer_fields.comment) {
+	      args.customer.comment = formData.comment;
+	      args.description += (getConfig().customer_fields.comment.title || 'Comment') + ': ' + formData.comment + '\n';
+	    }
+	    if (getConfig().customer_fields.phone) {
+	      args.customer.phone = formData.phone;
+	      args.description += (getConfig().customer_fields.phone.title || 'Phone') + ': ' + formData.phone + '\n';
+	    }
+	    if (getConfig().customer_fields.voip) {
+	      args.customer.voip = formData.voip;
+	      args.description += (getConfig().customer_fields.voip.title || 'Voip') + ': ' + formData.voip + '\n';
+	    }
 
- 	    $.extend(true, args, config.timekitCreateBooking);
+	    if (getConfig().booking.graph === 'group_customer' || getConfig().booking.graph === 'group_customer_payment') {
+	      args.related = { owner_booking_id: eventData.booking.id }
+	      args.resource_id = eventData.booking.resource.id
+	    } else if (typeof eventData.resources === 'undefined' || eventData.resources.length === 0) {
+	      throw triggerError(['No resources to pick from when creating booking']);
+	    } else {
+	      args.resource_id = eventData.resources[0].id
+	    }
 
- 	    // Handle group booking specifics
- 	    if (config.bookingGraph === 'group_customer' || config.bookingGraph === 'group_customer_payment') {
- 	      delete args.event
- 	      args.related = { owner_booking_id: eventData.booking.id }
- 	    }
+	    $.extend(true, args, getConfig().booking);
 
- 	    // Handle team availability specifics
- 	    if (eventData.users) {
- 	      var designatedUser = eventData.users[0]
- 	      var teamUser = $.grep(config.timekitFindTimeTeam.users, function(user) {
- 	        return designatedUser.email === user._email
- 	      })
- 	      if (teamUser.length < 1) {
- 	        throw triggerError(['Encountered an error when picking designated team user to receive booking', designatedUser, config.timekitFindTimeTeam.users]);
- 	      } else {
- 	        timekit = timekit.asUser(designatedUser.email, designatedUser.token)
- 	        if (teamUser[0]._calendar) args.event.calendar_id = teamUser[0]._calendar
- 	      }
- 	      utils.logDebug(['Creating booking for user:', designatedUser], config);
- 	    }
+	    utils.doCallback('createBookingStarted', args);
 
- 	    // if a remote widget (has ID) is used, pass that reference when creating booking
- 	    // TODO had to be disabled for team availability because not all members own the widget
- 	    if (!eventData.users && config.widgetId) args.widget_id = config.widgetId
+	    var requestHeaders = {
+	      'Timekit-OutputTimestampFormat': 'Y-m-d ' + getConfig().ui.localization.email_time_format + ' (P e)'
+	    };
 
- 	    utils.doCallback('createBookingStarted', config, args);
+	    var request = sdk
+	    .include(getConfig().create_booking_response_include)
+	    .headers(requestHeaders)
+	    .createBooking(args);
 
- 	    var requestHeaders = {
- 	      'Timekit-OutputTimestampFormat': 'Y-m-d ' + config.localization.emailTimeFormat + ' (P e)'
- 	    };
-
- 	    var request = timekit
- 	    .include('attributes', 'event', 'user')
- 	    .headers(requestHeaders)
- 	    .createBooking(args);
-
+	    request
+	    .then(function(response){
+	      utils.doCallback('createBookingSuccessful', response);
+	    }).catch(function(response){
+	      utils.doCallback('createBookingFailed', response);
+	      triggerError(['An error with Timekit Create Booking occured', response]);
+	    });
+	
  			var googleData = new Object();
  			googleData.name = formData.name;
  			googleData.email = formData.email;
