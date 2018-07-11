@@ -5613,7 +5613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    setTimeout(function(){
 	      bookingPageTarget.addClass('show');
 	    }, 100);
-		}
+
 	  };
 
 	  // Remove the booking page DOM node
