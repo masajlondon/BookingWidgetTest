@@ -5312,6 +5312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // Clicking a timeslot
 	  var clickTimeslot = function(eventData) {
+			console.log(eventData);
 
 	    if (!getConfig().disable_confirm_page) {
 	      showBookingPage(eventData)
@@ -5552,6 +5553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			var handlepayment = function(ot, formData, formElement, e, eventData, bookingVoucherPrice){
 	        console.log(bookingVoucherPrice);
 					if (parseInt(bookingVoucherPrice) <= 1){
+						console.log(eventData);
 						submitBookingForm(formData, ot, e, eventData);
 						$(ot).removeClass('loading').addClass('success');
 
