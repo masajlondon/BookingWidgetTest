@@ -5514,12 +5514,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    form.submit(function(e) {
+				var formElement = $(form);
 				if (!formElement.hasClass('success')){
 				e.preventDefault();
 				$(ot).addClass('loading');
 				var config = getConfig();
 				//https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-qSs3_Q47_eQfU4WAFs0g3wwGbhhLo245KKWvC0kbGbgpifnEe0n6xdqMbl_DkFWnDlOTPtFnrpCs/pub?output=tsv
-				var formElement = $(form);
+
 				formElement.addClass('loading');
 				var formData = {};
 				$.each(formElement.serializeArray(), function(i, field) {
