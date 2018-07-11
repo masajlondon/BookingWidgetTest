@@ -5632,15 +5632,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		// Event handler on form submit
 	  var submitBookingForm = function(formData, form, e, eventData, bookingVoucherPrice) {
+			console.log('submit booking form called');
 	    e.preventDefault();
 	    var formElement = $(form);
 			var originalform = $(form);
+			console.log('check for success ');
 
 			if(formElement.hasClass('success')) {
 					getAvailability();
 					hideBookingPage();
 					return;
 				}
+				console.log('abort if submitting');
 
 	    // Abort if form is submitting, have submitted or does not validate
 	    if(formElement.hasClass('loading') || formElement.hasClass('error') || !e.target.checkValidity()) {
@@ -5656,10 +5659,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // $.each(formElement.serializeArray(), function(i, field) {
 	    //   formData[field.name] = field.value;
 	    // });
+			console.log('adding loading');
 
 	    formElement.addClass('loading');
 
 	    utils.doCallback('submitBookingForm', getConfig(), formData);
+
+			console.log('creating booking');
 
 	    // Call create event endpoint
 	    timekitCreateBooking(formData, eventData, bookingVoucherPrice).then(function(response){
