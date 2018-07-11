@@ -5658,7 +5658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    formElement.addClass('loading');
 
-	    utils.doCallback('submitBookingForm', config, formData);
+	    utils.doCallback('submitBookingForm', getConfig(), formData);
 
 	    // Call create event endpoint
 	    timekitCreateBooking(formData, eventData, bookingVoucherPrice).then(function(response){
