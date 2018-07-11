@@ -5692,118 +5692,134 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  }
 
-	  // Create new booking
-	  var timekitCreateBooking = function(formData, eventData) {
-			console.log(eventData);
-	    var args = {
-	      start: eventData.start.format(),
-	      end: eventData.end.format(),
-	      description: '',
-	      customer: {
-	        name: formData.name,
-	        email: formData.email,
-	        timezone: moment.tz.guess()
-	      }
-	    };
+		// Create new booking
+ 	  var timekitCreateBooking = function(formData, eventData, bookingVoucherPrice) {
 
-	    if (getConfig().project_id) {
-	      args.project_id = getConfig().project_id
-	    } else {
-	      $.extend(true, args, {
-	        what: 'Meeting with ' + formData.name,
-	        where: 'TBD'
-	      });
-	    }
+ 	    var args = {
+ 	      event: {
+ 	        start: eventData.start.format(),
+ 	        end: eventData.end.format(),
+ 	        what: config.name + ' x ' + formData.name,
+ 	        where: 'TBD',
+ 	        description: '',
+ 	        participants: [formData.email]
+ 	      },
+ 	      customer: {
+ 	        name: formData.name,
+ 	        email: formData.email,
+ 	        timezone: moment.tz.guess()
+ 	      }
+ 	    };
 
-	    if (getConfig().customer_fields.location) {
-	      args.customer.where = formData.location;
-	      args.where = formData.location;
-	    }
-	    if (getConfig().customer_fields.comment) {
-	      args.customer.comment = formData.comment;
-	      args.description += (getConfig().customer_fields.comment.title || 'Comment') + ': ' + formData.comment + '\n';
-	    }
-	    if (getConfig().customer_fields.phone) {
-	      args.customer.phone = formData.phone;
-	      args.description += (getConfig().customer_fields.phone.title || 'Phone') + ': ' + formData.phone + '\n';
-	    }
-	    if (getConfig().customer_fields.voip) {
-	      args.customer.voip = formData.voip;
-	      args.description += (getConfig().customer_fields.voip.title || 'Voip') + ': ' + formData.voip + '\n';
-	    }
+ 	    if (config.calendar) {
+ 	      args.event.calendar_id = config.calendar;
+ 	    }
 
-	    if (getConfig().booking.graph === 'group_customer' || getConfig().booking.graph === 'group_customer_payment') {
-	      args.related = { owner_booking_id: eventData.booking.id }
-	      args.resource_id = eventData.booking.resource.id
-	    } else if (typeof eventData.resources === 'undefined' || eventData.resources.length === 0) {
-	      throw triggerError(['No resources to pick from when creating booking']);
-	    } else {
-	      args.resource_id = eventData.resources[0].id
-	    }
+ 	    if (config.bookingFields.location.enabled) {
+ 	      args.customer.where = formData.location;
+ 	      args.event.where = formData.location;
+ 	    }
+ 	    if (config.bookingFields.comment.enabled) {
+ 	      args.customer.comment = formData.comment;
+ 	      args.event.description += config.bookingFields.comment.placeholder + ': ' + formData.comment + '\n';
+ 	    }
+ 	    if (config.bookingFields.phone.enabled) {
+ 	      args.customer.phone = formData.phone;
+ 	      args.event.description += config.bookingFields.phone.placeholder + ': ' + formData.phone + '\n';
+ 	    }
+ 	    if (config.bookingFields.voip.enabled) {
+ 	      args.customer.voip = formData.voip;
+ 	      args.event.description += config.bookingFields.voip.placeholder + ': ' + formData.voip + '\n';
+ 	    }
 
-	    $.extend(true, args, getConfig().booking);
+ 	    $.extend(true, args, config.timekitCreateBooking);
 
-	    utils.doCallback('createBookingStarted', args);
+ 	    // Handle group booking specifics
+ 	    if (config.bookingGraph === 'group_customer' || config.bookingGraph === 'group_customer_payment') {
+ 	      delete args.event
+ 	      args.related = { owner_booking_id: eventData.booking.id }
+ 	    }
 
-	    var requestHeaders = {
-	      'Timekit-OutputTimestampFormat': 'Y-m-d ' + getConfig().ui.localization.email_time_format + ' (P e)'
-	    };
+ 	    // Handle team availability specifics
+ 	    if (eventData.users) {
+ 	      var designatedUser = eventData.users[0]
+ 	      var teamUser = $.grep(config.timekitFindTimeTeam.users, function(user) {
+ 	        return designatedUser.email === user._email
+ 	      })
+ 	      if (teamUser.length < 1) {
+ 	        throw triggerError(['Encountered an error when picking designated team user to receive booking', designatedUser, config.timekitFindTimeTeam.users]);
+ 	      } else {
+ 	        timekit = timekit.asUser(designatedUser.email, designatedUser.token)
+ 	        if (teamUser[0]._calendar) args.event.calendar_id = teamUser[0]._calendar
+ 	      }
+ 	      utils.logDebug(['Creating booking for user:', designatedUser], config);
+ 	    }
 
-	    var request = sdk
-	    .include(getConfig().create_booking_response_include)
-	    .headers(requestHeaders)
-	    .createBooking(args);
+ 	    // if a remote widget (has ID) is used, pass that reference when creating booking
+ 	    // TODO had to be disabled for team availability because not all members own the widget
+ 	    if (!eventData.users && config.widgetId) args.widget_id = config.widgetId
 
-			var googleData = new Object();
-			googleData.name = formData.name;
-			googleData.email = formData.email;
-			googleData.starttime = eventData.start.format().replace("T", " ").replace("+01:00", "");
-			googleData.endtime = eventData.end.format().replace("T", " ").replace("+01:00", "");
-			googleData.dateofbirth = formData.phone;
-		  	googleData.comment = formData.comment;
-		  	if (!bookingVoucherPrice){
-				bookingVoucherPrice = 0;
-			}
-		  	googleData.price = bookingVoucherPrice;
-		  	var url = window.location.href;
-		  	googleData.bookingtype = url.substring(url.lastIndexOf("/") + 1, url.length);
-			googleData.voucher = formData.voip;
+ 	    utils.doCallback('createBookingStarted', config, args);
 
-			var googlerequest;
-			googlerequest = $.ajax({
-					url: "https://script.google.com/macros/s/AKfycbyW_d_Ysbo1u3ZI0a-pL_BU7H1dvHZzEz_gwh_ZwMx3skXM1I8/exec",
-					type: "post",
-					data: googleData,
-					success: function(data) {
-							console.log(data);
-				}});
+ 	    var requestHeaders = {
+ 	      'Timekit-OutputTimestampFormat': 'Y-m-d ' + config.localization.emailTimeFormat + ' (P e)'
+ 	    };
 
-						// Callback handler that will be called on success
-				// googlerequest.done(function (response, textStatus, jqXHR){
-				// 		// Log a message to the console
-				// 		console.log("Hooray, it worked!");
-				// });
+ 	    var request = timekit
+ 	    .include('attributes', 'event', 'user')
+ 	    .headers(requestHeaders)
+ 	    .createBooking(args);
 
-				// Callback handler that will be called on failure
-				googlerequest.fail(function (jqXHR, textStatus, errorThrown){
-						// Log the error to the console
-						console.error(
-								"The following error occurred: "+
-								textStatus, errorThrown
-						);
-				});
+ 			var googleData = new Object();
+ 			googleData.name = formData.name;
+ 			googleData.email = formData.email;
+ 			googleData.starttime = eventData.start.format().replace("T", " ").replace("+01:00", "");
+ 			googleData.endtime = eventData.end.format().replace("T", " ").replace("+01:00", "");
+ 			googleData.dateofbirth = formData.phone;
+ 		  	googleData.comment = formData.comment;
+ 		  	if (!bookingVoucherPrice){
+ 				bookingVoucherPrice = 0;
+ 			}
+ 		  	googleData.price = bookingVoucherPrice;
+ 		  	var url = window.location.href;
+ 		  	googleData.bookingtype = url.substring(url.lastIndexOf("/") + 1, url.length);
+ 			googleData.voucher = formData.voip;
 
-	    request
-	    .then(function(response){
-	      utils.doCallback('createBookingSuccessful', response);
-	    }).catch(function(response){
-	      utils.doCallback('createBookingFailed', response);
-	      triggerError(['An error with Timekit Create Booking occured', response]);
-	    });
+ 			var googlerequest;
+ 			googlerequest = $.ajax({
+ 					url: "https://script.google.com/macros/s/AKfycbyW_d_Ysbo1u3ZI0a-pL_BU7H1dvHZzEz_gwh_ZwMx3skXM1I8/exec",
+ 					type: "post",
+ 					data: googleData,
+ 					success: function(data) {
+ 							console.log(data);
+ 				}});
 
-	    return request;
+ 						// Callback handler that will be called on success
+ 				// googlerequest.done(function (response, textStatus, jqXHR){
+ 				// 		// Log a message to the console
+ 				// 		console.log("Hooray, it worked!");
+ 				// });
 
-	  };
+ 				// Callback handler that will be called on failure
+ 				googlerequest.fail(function (jqXHR, textStatus, errorThrown){
+ 						// Log the error to the console
+ 						console.error(
+ 								"The following error occurred: "+
+ 								textStatus, errorThrown
+ 						);
+ 				});
+
+ 	    request
+ 	    .then(function(response){
+ 	      utils.doCallback('createBookingSuccessful', config, response);
+ 	    }).catch(function(response){
+ 	      utils.doCallback('createBookingFailed', config, response);
+ 	      triggerError(['An error with Timekit CreateBooking occured', response]);
+ 	    });
+
+ 	    return request;
+
+ 	  };
 
 	  // Render the powered by Timekit message
 	  var renderPoweredByMessage = function(pageTarget) {
