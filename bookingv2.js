@@ -5312,8 +5312,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // Clicking a timeslot
 	  var clickTimeslot = function(eventData) {
-			console.log(eventData);
-
 	    if (!getConfig().disable_confirm_page) {
 	      showBookingPage(eventData)
 	    } else {
