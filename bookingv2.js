@@ -5552,6 +5552,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					if (parseInt(bookingVoucherPrice) <= 1){
 						console.log(eventData);
 						submitBookingForm(formData, ot, e, eventData, 0);
+						formElement.find('.booked-email').html(formData.email);
 						$(ot).removeClass('loading').addClass('success');
 
 					} else {
@@ -5571,6 +5572,7 @@ return /******/ (function(modules) { // webpackBootstrap
 										}
 									}).then(function(stripeCustomer) {
 										submitBookingForm(formData, ot, e, eventData, bookingVoucherPrice);
+										formElement.find('.booked-email').html(formData.email);
 										formElement.removeClass('loading').addClass('success');
 									}).fail(function(e) {
 										$('.pay').text('Buy');
