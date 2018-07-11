@@ -5518,6 +5518,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    form.submit(function(e) {
 				e.preventDefault();
 				$(ot).addClass('loading');
+				this.addClass('loading');
 				var config = getConfig();
 				//https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-qSs3_Q47_eQfU4WAFs0g3wwGbhhLo245KKWvC0kbGbgpifnEe0n6xdqMbl_DkFWnDlOTPtFnrpCs/pub?output=tsv
 				var formElement = $(form);
@@ -5762,7 +5763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      utils.doCallback('createBookingFailed', response);
 	      triggerError(['An error with Timekit Create Booking occured', response]);
 	    });
-	
+
  			var googleData = new Object();
  			googleData.name = formData.name;
  			googleData.email = formData.email;
